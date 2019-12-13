@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# import pymysql
 
 from .items import EbayItemGood
 from .items import EbayItemShop
+
 
 
 class SavePipeline(object):
@@ -11,6 +11,7 @@ class SavePipeline(object):
     item2 = []
 
     def process_item(self, item, spider):
+
 
         if isinstance(item, EbayItemShop):
 
@@ -21,7 +22,7 @@ class SavePipeline(object):
             if len(self.item1) == 10:
                 for i in self.item1:
                     with open(r'D:/Spider_Demo/ebay/shopinfo.txt', 'a', encoding='utf-8') as f:
-                        f.write(str(i) + '\n')
+                        f.write(str(i) + ',' + '\n')
                 self.item1 = []
 
 
@@ -34,7 +35,7 @@ class SavePipeline(object):
             if len(self.item2) == 50:
                 for i in self.item2:
                     with open(r'D:/Spider_Demo/ebay/goodsinfo.txt', 'a', encoding='utf-8') as f:
-                        f.write(str(i) + '\n')
+                        f.write(str(i) + ',' +'\n')
                 self.item2 = []
 
         return item
@@ -124,7 +125,7 @@ class SavePipeline(object):
 #                 conn2.close()
 #
 #         return item
+
 #
-#
-#     def close_spider(self, spider):
-#         pass
+    # def close_spider(self, spider):
+    #     pass

@@ -39,3 +39,4 @@ class EbayItemGood(scrapy.Item):
     cat_4 = scrapy.Field()
     cat_5 = scrapy.Field()
     cat_6 = scrapy.Field()
+

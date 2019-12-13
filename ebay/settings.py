@@ -66,8 +66,8 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   # 'ebay.pipelines.EbayPipeline': 300,
    'ebay.pipelines.SavePipeline': 300,
+
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -91,7 +91,7 @@ ITEM_PIPELINES = {
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-# redis-bloomfilter过滤器
+
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
 # 确保所有的蜘蛛通过Redis的共享相同的重复过滤
 DUPEFILTER_CLASS  =  "scrapy_redis.dupefilter.RFPDupeFilter"

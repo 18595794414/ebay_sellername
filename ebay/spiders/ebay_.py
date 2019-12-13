@@ -15,7 +15,7 @@ class EbaySpider(RedisSpider):
     # start_urls = ['https://www.ebay.com/n/all-categories']
     redis_key = 'ebay:start_urls'
 
-    # 起始入口url
+    # # 起始入口url
     # def start_requests(self):
     #     yield scrapy.Request(url=self.start_urls[0],
     #                          callback=self.parse_category1)
@@ -31,7 +31,6 @@ class EbaySpider(RedisSpider):
     # def parse_category1(self, response):
     #     category1_urls = response.xpath('//ul[@class="sub-cats"]/li/a/@href').getall()
     #     for category1_url in category1_urls:
-    #         print(category1_url)
     #         yield scrapy.Request(url=category1_url,
     #                              callback=self.parse_category2)
 
@@ -49,10 +48,10 @@ class EbaySpider(RedisSpider):
                 category2_urls.append(url)
         for category2_url in category2_urls:
             yield scrapy.Request(url=category2_url,
-                                 callback=self.parse_list)
+                                 callback=self.parse_good)
 
     # 二级分类下列表页的商品url
-    def parse_list(self, response):
+    def parse_good(self, response):
         good_urls = []
         if response.xpath('//div[starts-with(@class,"srp-river-results")]'):
             urls = response.xpath('//ul[starts-with(@class,"srp-results")]//a[@class="s-item__link"]/@href').getall()
@@ -68,19 +67,30 @@ class EbaySpider(RedisSpider):
 
     # 获取商家名称
     def parse_seller(self, response):
-        # seller_name = response.xpath('//span[@class="mbg-nw"]/text()').get()
-        # if seller_name != None:
-        #     with open(r'D:/Spider_Demo/ebay/seller_name.txt', 'a') as f:
-        #         f.write(seller_name + '\n')
 
-        # 商家详细信息url
-        seller_url = response.xpath('//div[@class="mbg vi-VR-margBtm3"]/a/@href').get()
-        if seller_url:
-            yield scrapy.Request(url=seller_url,
-                                 callback=self.parse_seller_info)
+        seller_name = response.xpath('//span[@class="mbg-nw"]/text()|//span[@class="app-sellerpresence__sellername"]/span/text()|//div[@class="seller-persona "]/span[2]/a[1]/text()').get()
 
-    # 商家详情源码、字段保存
-    def parse_seller_info(self, response):
+        shop_url = 'https://www.ebay.com/usr/%s'
+
+        list_url = 'https://www.ebay.com/sch/%s/m.html?_nkw&_armrs=1&_from&rt=nc&LH_PrefLoc=6'
+
+        if seller_name:
+            with open('D:/Spider_Demo/ebay/seller_name.txt', 'a', encoding='utf-8') as f:
+                f.write(seller_name + '\n')
+
+            shop_url = shop_url % seller_name
+
+            list_url = list_url % seller_name
+
+            yield scrapy.Request(url=shop_url,
+                                 callback=self.parse_shop)
+
+            yield scrapy.Request(url=list_url,
+                                 callback=self.parse_list)
+
+    # 获取商家详情
+    def parse_shop(self, response):
+
         global Shipping_time_score, Item_s_described_score, Communication_score, Shipping_charges_score, Positive_feedback, Neutral_feedback, Negative_feedback
         seller_name = response.xpath('//a[@class="mbg-id"]/text()').get()
         followers_num = response.xpath('//div[@class="mem_info"]/span[1]/span/span/text()').get()
@@ -133,31 +143,22 @@ class EbaySpider(RedisSpider):
 
         yield item
 
-        # # 保存商家源码
-        # with open(r'D:/Spider_Demo/ebay/html_shop/' + seller_name + '.html', 'wb') as f:
-        #     f.write(response.body)
+    # 获取商品url，和下一页url
+    def parse_list(self, response):
 
-        # 商家商品列表url
-        if shop_url:
-            yield scrapy.Request(url=shop_url,
-                                 callback=self.parse_shop_list)
-
-    # 商店列表页
-    def parse_shop_list(self, response):
-
-        if response.xpath('//div[@id="ResultSetItems"]'):
-            urls = response.xpath('//ul[@id="ListViewInner"]/li/h3/a/@href').getall()
-            for url in urls:
+        if response.xpath('//ul[@id="ListViewInner"]'):
+            goods_urls = response.xpath('//ul[@id="ListViewInner"]/li/h3/a/@href').getall()
+            for url in goods_urls:
                 yield scrapy.Request(url=url,
-                                     callback=self.parse_good_info)
-        # 下一页
-        next_page = response.xpath('//td[@class="pagn-next"]/a/@href').get()
-        if next_page:
-            yield scrapy.Request(url=next_page,
-                                 callback=self.parse_shop_list)
+                                     callback=self.parse_goodinfo)
 
-    # 商品详情源码、字段保存
-    def parse_good_info(self, response):
+            next_page = response.xpath('//td[@class="pagn-next"]/a/@href').get()
+            if next_page:
+                yield scrapy.Request(url=next_page,
+                                     callback=self.parse_list)
+
+    # 获取商品详情
+    def parse_goodinfo(self, response):
         good_id = re.search(r'itm.+/(\d+)', response.url).group(1)
         good_name = response.xpath('//h1[@id="itemTitle"]/text()').get()
         price_dollar = response.xpath('//span[@id="prcIsum"]/@content').get()
@@ -205,8 +206,3 @@ class EbaySpider(RedisSpider):
 
         yield item
 
-        # 源码保存
-        # html_name = re.search(r'[\w]+-[\w]+', response.url)[0]
-        # if response.status == 200:
-        #     with open(r'D:/Spider_Demo/ebay/html_good/' + html_name + '.html', 'wb') as f:
-        #         f.write(response.body)
