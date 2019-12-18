@@ -3,4 +3,6 @@ __pycache__
 *.log*
 
 
-
+*.txt
+shop_html/
+goods_html/
