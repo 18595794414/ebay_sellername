@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import os
+
+BASE_PATH = os.path.dirname(__file__)
+
 BOT_NAME = 'ebay'
 
 SPIDER_MODULES = ['ebay.spiders']
 NEWSPIDER_MODULE = 'ebay.spiders'
-COMMANDS_MODULE = 'ebay.commands'
 
 # 禁用机器协议
 ROBOTSTXT_OBEY = False
@@ -19,7 +22,8 @@ DOWNLOAD_DELAY = 0.3
 DOWNLOAD_TIMEOUT = 30
 
 # 日志级别
-# LOG_LEVEL = 'INFO'
+LOG_LEVEL = 'INFO'
+# LOG_FILE = BASE_PATH + 'ebay_seller_name.log'
 
 # 开启重试：
 RETRY_ENABLED = True
@@ -51,7 +55,7 @@ DEFAULT_REQUEST_HEADERS = {
 
 
 DOWNLOADER_MIDDLEWARES = {
-   'ebay.middlewares.EbayDownloaderMiddleware': 543,
+   # 'ebay.middlewares.EbayDownloaderMiddleware': 543,
 }
 
 
@@ -66,28 +70,6 @@ ITEM_PIPELINES = {
 }
 
 
-# AUTOTHROTTLE_ENABLED = True
-
-# 开始下载时限速并延迟时间
-# AUTOTHROTTLE_START_DELAY = 5
-
-# 高并发请求时最大延迟时间
-# AUTOTHROTTLE_MAX_DELAY = 60
-
-# AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
-# Enable showing throttling stats for every response received:
-# AUTOTHROTTLE_DEBUG = False
-
-# 打开缓存
-# HTTPCACHE_ENABLED = True
-# 设置缓存过期时间（单位：秒）
-# HTTPCACHE_EXPIRATION_SECS = 0
-# 缓存路径(默认为：.scrapy/httpcache)
-# HTTPCACHE_DIR = 'httpcache'
-# 忽略的状态码
-# HTTPCACHE_IGNORE_HTTP_CODES = []
-# 缓存模式(文件缓存)
-# HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 # 启用Redis调度存储请求队列，使用Scrapy-Redis的调度器,不再使用scrapy的调度器
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
