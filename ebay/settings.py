@@ -38,8 +38,21 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 16
 # 禁用cookie
 COOKIES_ENABLED = False
 
-# Disable Telnet Console (enabled by default)
-# TELNETCONSOLE_ENABLED = False
+# 开启自动限速
+AUTOTHROTTLE_ENABLED = True
+
+# 开始下载时限速并延迟时间
+AUTOTHROTTLE_START_DELAY = 1
+
+# 高并发请求时最大延迟时间
+AUTOTHROTTLE_MAX_DELAY = 15
+
+# 平均每秒并发数
+AUTOTHROTTLE_TARGET_CONCURRENCY = 4.0
+
+# 是否显示
+# AUTOTHROTTLE_DEBUG = False
+
 
 # Override the default request headers:
 DEFAULT_REQUEST_HEADERS = {
@@ -65,7 +78,7 @@ DOWNLOADER_MIDDLEWARES = {
 
 
 ITEM_PIPELINES = {
-   'ebay.pipelines.SavePipeline': 300,
+
 
 }
 

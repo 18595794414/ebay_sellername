@@ -51,10 +51,12 @@ class EbaySpider(RedisSpider):
                                  callback=self.parse_seller)
 
         # 判断下一页
-        next_page = response.xpath('//a[@rel="next"]/@href').get()
-        if next_page != '#':
-            yield scrapy.Request(url=next_page,
-                                 callback=self.parse_good)
+        if response.xpath('//a[@rel="next"]'):
+            next_page = response.xpath('//a[@rel="next"]/@href').get()
+            if next_page != '#':
+                yield scrapy.Request(url=next_page,
+                                     callback=self.parse_good)
+
 
     # 获取商家名称
     def parse_seller(self, response):
